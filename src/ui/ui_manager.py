@@ -115,13 +115,17 @@ class UIManager:
     # Frame Updates
     # ===========================================================
 
-    def update(self, mouse_pos, game_data: dict = None):
+    def update(self, mouse_pos, game_data: dict = None, dt: float = 0):
         """Update all visible elements in the active group and components."""
 
         # Always update system group elements (like LevelUpUI)
         for elem in self.groups.get("system", []):
             if elem.visible:
-                elem.update(mouse_pos)
+                # Pass dt to elements that support it (like LevelUpUI)
+                if hasattr(elem, 'update') and 'dt' in elem.update.__code__.co_varnames:
+                    elem.update(mouse_pos, dt)
+                else:
+                    elem.update(mouse_pos)
 
         # Update active group elements
         for elem in self.groups[self.active_group]:

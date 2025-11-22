@@ -127,12 +127,13 @@ class LevelUpUI(BaseUI):
             button_rect = pygame.Rect(button_x, button_y, button_width, button_height)
             self.choice_buttons.append(button_rect)
 
-    def update(self, mouse_pos):
+    def update(self, mouse_pos, dt=0):
         """
         Update UI state based on mouse position.
 
         Args:
             mouse_pos: Current mouse position (screen coordinates)
+            dt: Delta time since last frame (seconds) - unused but kept for compatibility
         """
         if not self.is_active or self.choice_made:
             return
@@ -173,8 +174,7 @@ class LevelUpUI(BaseUI):
                 self.selected_choice = self.upgrade_choices[i]["effect"]
                 DebugLogger.action(f"Level-up choice selected: {self.selected_choice}")
 
-                # Auto-hide after selection
-                pygame.time.set_timer(pygame.USEREVENT + 1, 500)  # Hide after 500ms
+                # Return choice first, let caller handle the hide()
                 return self.selected_choice
 
         return None

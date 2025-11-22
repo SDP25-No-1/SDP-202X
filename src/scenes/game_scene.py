@@ -190,6 +190,8 @@ class GameScene:
                     # Apply the selected upgrade
                     STATE.exp_manager.handle_upgrade_choice(upgrade_choice)
                     DebugLogger.action(f"Level-up upgrade applied: {upgrade_choice}")
+                    # Hide the UI after successful upgrade
+                    self.level_up_ui.hide()
                     return
 
         self.ui.handle_event(event)
@@ -234,7 +236,7 @@ class GameScene:
         self.effect_manager.update(dt)
 
         # 8. UI
-        self.ui.update(pygame.mouse.get_pos())
+        self.ui.update(pygame.mouse.get_pos(), dt=dt)
 
         hud_manager = self.ui.subsystems.get("hud")
         if hud_manager:

@@ -65,7 +65,7 @@ class ExpManager:
             self.level_up_ui.show_level_up(self.game_state.level)
             DebugLogger.action(f"ExpManager triggered LevelUpUI for level {self.game_state.level}")
         else:
-            DebugLogger.warning("ExpManager: No LevelUpUI reference available")
+            DebugLogger.action("ExpManager: No LevelUpUI reference available")
 
     def handle_upgrade_choice(self, upgrade_type: str):
         """
@@ -75,35 +75,41 @@ class ExpManager:
             upgrade_type: The type of upgrade chosen ("health", "damage", or "speed")
         """
         if not self.game_state.player:
-            DebugLogger.warning("ExpManager: No player reference available for upgrade")
+            DebugLogger.action("ExpManager: No player reference available for upgrade")
             return
 
         player = self.game_state.player
 
+        # Log current stats before upgrade
+        DebugLogger.state(f"Current player stats - Health: {player.health}/{player.max_health}, Damage: {player.damage}, Speed: {player.base_speed:.2f}")
+
         if upgrade_type == "health":
             # Increase max health by 1 and heal to full
+            old_max = player.max_health
             player.max_health += 1
             player.health = player.max_health
-            DebugLogger.action(f"Applied health upgrade: +1 max health (new: {player.max_health})")
+            DebugLogger.action(f"Health upgrade: max_health {old_max} → {player.max_health}, health fully restored")
 
         elif upgrade_type == "damage":
             # Increase damage by 10%
             if hasattr(player, 'damage'):
+                old_damage = player.damage
                 player.damage = int(player.damage * 1.1)
-                DebugLogger.action(f"Applied damage upgrade: +10% (new: {player.damage})")
-            else:
-                DebugLogger.warning("Player has no damage attribute to upgrade")
+                DebugLogger.action(f"Damage upgrade: {old_damage} → {player.damage}")
 
         elif upgrade_type == "speed":
             # Increase speed by 10% permanently
             if hasattr(player, 'base_speed'):
+                old_speed = player.base_speed
                 player.base_speed = player.base_speed * 1.1
-                DebugLogger.action(f"Applied speed upgrade: +10% (new base_speed: {player.base_speed:.2f})")
-            else:
-                DebugLogger.warning("Player has no base_speed attribute to upgrade")
+                DebugLogger.action(f"Speed upgrade: {old_speed:.2f} → {player.base_speed:.2f}")
 
         else:
-            DebugLogger.warning(f"Unknown upgrade type: {upgrade_type}")
+            DebugLogger.action(f"Unknown upgrade type: {upgrade_type}")
+            return
+
+        # Log updated stats after upgrade
+        DebugLogger.state(f"Updated player stats - Health: {player.health}/{player.max_health}, Damage: {player.damage}, Speed: {player.base_speed:.2f}")
 
     def is_level_up_ui_active(self) -> bool:
         """Check if level-up UI is currently active and waiting for user choice."""
@@ -111,5 +117,5 @@ class ExpManager:
 
     def calculate_next_exp(self, lv: int) -> int:
         """Smooth exponential EXP curve."""
-        return int(30 * (1.15 ** (lv - 1)))
+        return int(100 * (1.30 ** (lv - 1)))
 

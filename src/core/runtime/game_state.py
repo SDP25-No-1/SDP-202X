@@ -12,7 +12,7 @@ class GameState:
         self.lives = 3
         self.level = 1
         self.exp = 0
-        self.level_exp = 30
+        self.level_exp = 100  # First EXP required for next level
         self.player_ref = None  # Can hold player instance reference
         self.player = None  # Direct player reference for upgrade system
 
