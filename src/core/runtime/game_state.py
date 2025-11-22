@@ -14,6 +14,7 @@ class GameState:
         self.exp = 0
         self.level_exp = 30
         self.player_ref = None  # Can hold player instance reference
+        self.player = None  # Direct player reference for upgrade system
 
 
         # Flags

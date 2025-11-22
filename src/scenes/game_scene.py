@@ -17,6 +17,7 @@ import pygame
 # Core Systems
 from src.core.debug.debug_logger import DebugLogger
 from src.core.runtime.game_settings import Debug, Display
+from src.core.runtime.game_state import STATE
 
 # Player Entity
 from src.entities.player.player_core import Player
@@ -25,6 +26,7 @@ from src.entities.entity_state import LifecycleState
 # UI Systems
 from src.ui.ui_manager import UIManager
 from src.ui.hud_manager import HUDManager
+from src.ui.level_up_ui import LevelUpUI
 
 # Combat Systems
 from src.systems.combat.bullet_manager import BulletManager
@@ -71,6 +73,11 @@ class GameScene:
             DebugLogger.init("HUDManager attached successfully")
         except Exception as e:
             DebugLogger.fail(f"HUDManager unavailable: {e}")
+
+        # LevelUpUI (system overlay)
+        self.level_up_ui = LevelUpUI(self.display)
+        self.ui.register(self.level_up_ui, group="system")
+        DebugLogger.init("LevelUpUI registered with UIManager")
 
         # spawn player
         start_x = Display.WIDTH / 2
@@ -155,6 +162,11 @@ class GameScene:
 
         self.current_level_idx = 0
 
+        # Connect LevelUpUI with ExpManager and Player
+        STATE.player = self.player
+        STATE.exp_manager.set_level_up_ui(self.level_up_ui)
+        DebugLogger.init("Connected LevelUpUI ↔ ExpManager ↔ Player")
+
         DebugLogger.section("- Finished Initialization", only_title=True)
         DebugLogger.section("─" * 59 + "\n", only_title=True)
 
@@ -170,6 +182,15 @@ class GameScene:
         Args:
             event (pygame.event.Event): The event to process.
         """
+        # Check for LevelUpUI clicks first
+        if self.level_up_ui.is_active and not self.level_up_ui.choice_made:
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                upgrade_choice = self.level_up_ui.handle_click(event.pos)
+                if upgrade_choice:
+                    # Apply the selected upgrade
+                    STATE.exp_manager.handle_upgrade_choice(upgrade_choice)
+                    return
+
         self.ui.handle_event(event)
 
     # ===========================================================
@@ -183,7 +204,8 @@ class GameScene:
             dt (float): Delta time (in seconds) since the last frame.
         """
 
-        if self.paused:
+        # Pause game if level-up UI is waiting for user choice
+        if self.paused or STATE.exp_manager.is_level_up_ui_active():
             return
 
         # 1) Player Input & Update

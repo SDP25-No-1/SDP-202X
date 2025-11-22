@@ -118,18 +118,22 @@ class UIManager:
     def update(self, mouse_pos, game_data: dict = None):
         """Update all visible elements in the active group and components."""
 
+        # Always update system group elements (like LevelUpUI)
+        for elem in self.groups.get("system", []):
+            if elem.visible:
+                elem.update(mouse_pos)
+
+        # Update active group elements
         for elem in self.groups[self.active_group]:
             if elem.visible:
                 elem.update(mouse_pos)
 
-        # 2. Update attached sub-managers
+        # Update attached sub-managers
         for name, subsystem in self.subsystems.items():
             if hasattr(subsystem, "update"):
                 subsystem.update(mouse_pos)
-
-        # DebugLogger.state(f"Updated group '{self.active_group}' and components")
-            if game_data and name == "hud" and hasattr(subsystem, "update_values"):
-                subsystem.update_values(game_data)
+                if game_data and name == "hud" and hasattr(subsystem, "update_values"):
+                    subsystem.update_values(game_data)
 
     # ===========================================================
     # Input Handling
@@ -181,7 +185,12 @@ class UIManager:
             elif hasattr(subsystem, "draw"):
                 subsystem.draw(draw_manager)
 
-        # Draw group-level elements
+        # Draw system group elements (like LevelUpUI)
+        for elem in self.groups.get("system", []):
+            if elem.visible:
+                draw_manager.queue_draw(elem.render_surface(), elem.rect, elem.layer)
+
+        # Draw active group elements
         for elem in self.groups[self.active_group]:
             if elem.visible:
                 draw_manager.queue_draw(elem.render_surface(), elem.rect, elem.layer)
