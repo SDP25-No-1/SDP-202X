@@ -189,6 +189,7 @@ class GameScene:
                 if upgrade_choice:
                     # Apply the selected upgrade
                     STATE.exp_manager.handle_upgrade_choice(upgrade_choice)
+                    DebugLogger.action(f"Level-up upgrade applied: {upgrade_choice}")
                     return
 
         self.ui.handle_event(event)

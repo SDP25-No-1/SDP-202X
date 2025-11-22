@@ -6,7 +6,7 @@ Level-up notification UI component that displays when player gains a level.
 Responsibilities
 ----------------
 - Show "LEVEL UP!" notification with level number
-- Display upgrade choices (Health +1, Damage +50%, Speed +10%)
+- Display upgrade choices (Health +1, Damage +10%, Speed +10%)
 - Handle user selection and apply chosen upgrade
 - Pause game while waiting for user choice
 - Handle rendering and visibility lifecycle
@@ -132,15 +132,20 @@ class LevelUpUI(BaseUI):
         Update UI state based on mouse position.
 
         Args:
-            mouse_pos: Current mouse position
+            mouse_pos: Current mouse position (screen coordinates)
         """
         if not self.is_active or self.choice_made:
             return
 
+        # Convert screen coordinates to UI-relative coordinates
+        ui_relative_x = mouse_pos[0] - self.rect.x
+        ui_relative_y = mouse_pos[1] - self.rect.y
+        ui_relative_pos = (ui_relative_x, ui_relative_y)
+
         # Check for hover on buttons (visual feedback handled in render)
         self.hover_index = None
         for i, button_rect in enumerate(self.choice_buttons):
-            if button_rect.collidepoint(mouse_pos):
+            if button_rect.collidepoint(ui_relative_pos):
                 self.hover_index = i
                 break
 
@@ -149,7 +154,7 @@ class LevelUpUI(BaseUI):
         Handle mouse click on upgrade choices.
 
         Args:
-            mouse_pos: Current mouse position
+            mouse_pos: Current mouse position (screen coordinates)
 
         Returns:
             The selected upgrade effect or None if no choice made
@@ -157,11 +162,16 @@ class LevelUpUI(BaseUI):
         if not self.is_active or self.choice_made:
             return None
 
+        # Convert screen coordinates to UI-relative coordinates
+        ui_relative_x = mouse_pos[0] - self.rect.x
+        ui_relative_y = mouse_pos[1] - self.rect.y
+        ui_relative_pos = (ui_relative_x, ui_relative_y)
+
         for i, button_rect in enumerate(self.choice_buttons):
-            if button_rect.collidepoint(mouse_pos):
+            if button_rect.collidepoint(ui_relative_pos):
                 self.choice_made = True
                 self.selected_choice = self.upgrade_choices[i]["effect"]
-                DebugLogger.action(f"LevelUpUI choice selected: {self.selected_choice}")
+                DebugLogger.action(f"Level-up choice selected: {self.selected_choice}")
 
                 # Auto-hide after selection
                 pygame.time.set_timer(pygame.USEREVENT + 1, 500)  # Hide after 500ms
