@@ -53,19 +53,19 @@ class LevelUpUI(BaseUI):
         self.upgrade_choices = [
             {
                 "name": "Health +1",
-                "description": "Increase max health by 1",
+                "description": "",
                 "color": (255, 100, 100),  # Red
                 "effect": "health"
             },
             {
-                "name": "Damage +50%",
-                "description": "Increase damage by 50%",
+                "name": "Damage +10%",
+                "description": "",
                 "color": (100, 255, 100),  # Green
                 "effect": "damage"
             },
             {
                 "name": "Speed +10%",
-                "description": "Increase movement speed by 10%",
+                "description": "",
                 "color": (100, 150, 255),  # Blue
                 "effect": "speed"
             }
@@ -228,16 +228,10 @@ class LevelUpUI(BaseUI):
                 pygame.draw.rect(surface, button_color, button_rect, border_radius=8)
                 pygame.draw.rect(surface, choice["color"], button_rect, 2, border_radius=8)
 
-                # Draw upgrade name
+                # Draw upgrade name (centered vertically)
                 name_text = self.button_font.render(choice["name"], True, (255, 255, 255))
-                name_rect = name_text.get_rect(centerx=button_rect.centerx, y=button_rect.y + 15)
+                name_rect = name_text.get_rect(center=button_rect.center)
                 surface.blit(name_text, name_rect)
-
-                # Draw upgrade description (smaller font)
-                desc_font = pygame.font.Font(None, 16)
-                desc_text = desc_font.render(choice["description"], True, (200, 200, 200))
-                desc_rect = desc_text.get_rect(centerx=button_rect.centerx, y=button_rect.y + 40)
-                surface.blit(desc_text, desc_rect)
 
         # Show selection confirmation
         if self.choice_made and self.selected_choice:

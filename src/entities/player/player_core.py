@@ -83,6 +83,7 @@ class Player(BaseEntity):
         self.health = core["health"]
         self.max_health = self.health
         self._cached_health = self.health
+        self.damage = 1  # Base damage (enough to kill first enemy in one hit)
 
         self.visible = True
         self.layer = Layers.PLAYER

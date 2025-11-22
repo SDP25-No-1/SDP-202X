@@ -87,20 +87,20 @@ class ExpManager:
             DebugLogger.action(f"Applied health upgrade: +1 max health (new: {player.max_health})")
 
         elif upgrade_type == "damage":
-            # Increase damage by 50%
+            # Increase damage by 10%
             if hasattr(player, 'damage'):
-                player.damage = int(player.damage * 1.5)
-                DebugLogger.action(f"Applied damage upgrade: +50% (new: {player.damage})")
+                player.damage = int(player.damage * 1.1)
+                DebugLogger.action(f"Applied damage upgrade: +10% (new: {player.damage})")
             else:
                 DebugLogger.warning("Player has no damage attribute to upgrade")
 
         elif upgrade_type == "speed":
-            # Increase speed by 10%
-            if hasattr(player, 'speed'):
-                player.speed = player.speed * 1.1
-                DebugLogger.action(f"Applied speed upgrade: +10% (new: {player.speed:.2f})")
+            # Increase speed by 10% permanently
+            if hasattr(player, 'base_speed'):
+                player.base_speed = player.base_speed * 1.1
+                DebugLogger.action(f"Applied speed upgrade: +10% (new base_speed: {player.base_speed:.2f})")
             else:
-                DebugLogger.warning("Player has no speed attribute to upgrade")
+                DebugLogger.warning("Player has no base_speed attribute to upgrade")
 
         else:
             DebugLogger.warning(f"Unknown upgrade type: {upgrade_type}")
