@@ -31,8 +31,8 @@ class LevelUpUI(BaseUI):
             layer: Rendering layer (high to appear on top)
         """
         # Calculate center position for level-up text
-        screen_width = display_manager.get_width()
-        screen_height = display_manager.get_height()
+        screen_width = display_manager.game_width
+        screen_height = display_manager.game_height
 
         # Larger area to accommodate upgrade choices
         width, height = 500, 300
